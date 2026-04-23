@@ -1166,6 +1166,24 @@ app.get('/search', async (req, res) => {
             repl = repl.replace(/lastone/, ext_t_s_eom)
         })
 
+        if (result.data.items.length <= 0) {
+            console.log("[INFO] search: no result found for the query: ", actualq)
+            repl = repl.replace(/didyoumean/g, "");
+            repl = repl.replace(/item/g, "");
+
+            repl = repl.replace(/topItem/g, "test");
+            let regex = '/<table id="nav" align="center"style="border-collapse:collapse;margin:auto;text-align:center;direction:ltr;margin-bottom:1\.4em"><tr valign="top"><td class="b"><a href="/search\?hl=ja&amp;q=query&amp;start=prevstart&amp;sa=N"><span class="csb ch" style="background-position:0px 0;width:16px"></span>.+</a><td class="e"><span class="csb" style="background-position:-26px 0;width:18px"></span><td class="cur"><td><a href="/search\?hl=en&amp;q=query&amp;sa=N"><span class="csb ch" style="background-position:-44px 0;width:16px"></span>1</a><td><a href="/search\?hl=en&amp;q=query&amp;start=10&amp;sa=N"><span class="csb ch" style="background-position:-60px 0;width:16px"></span>2</a><td><a href="/search\?hl=en&amp;q=query&amp;start=20&amp;sa=N"><span class="csb ch" style="background-position:-60px 0;width:16px"></span>3</a><td><a href="/search\?hl=en&amp;q=query&amp;start=30&amp;sa=N"><span class="csb ch" style="background-position:-60px 0;width:16px"></span>4</a><td><a href="/search\?hl=en&amp;q=query&amp;start=40&amp;sa=N"><span class="csb ch" style="background-position:-60px 0;width:16px"></span>5</a><td><a href="/search\?hl=en&amp;q=query&amp;start=50&amp;sa=N"><span class="csb ch" style="background-position:-60px 0;width:16px"></span>6</a><td><a href="/search\?hl=en&amp;q=query&amp;start=60&amp;sa=N"><span class="csb ch" style="background-position:-60px 0;width:16px"></span>7</a><td><a href="/search\?hl=en&amp;q=query&amp;start=70&amp;sa=N"><span class="csb ch" style="background-position:-60px 0;width:16px"></span>8</a><td><a href="/search\?hl=en&amp;q=query&amp;start=80&amp;sa=N"><span class="csb ch" style="background-position:-60px 0;width:16px"></span>9</a><td><a href="/search\?hl=en&amp;q=query&amp;start=90&amp;sa=N"><span class="csb ch" style="background-position:-60px 0;width:16px"></span>10</a><td class="b"><a href="/search\?hl=en&amp;q=query&amp;start=nextstart&amp;sa=N"><span class="csb ch" style="background-position:-76px 0;margin-right:34px;width:66px"></span>.+</a></table>/'
+            repl = repl.replace(regex, '')
+
+            if (serverlanguage == "ja"){
+                let encoded = iconv.encode(repl, 'shift_jis')
+                res.set("Content-Type", "text/html;charset=Shift_JIS")
+                res.send(encoded)
+                return
+            }
+            res.send(repl)
+        }
+
         repl = repl.replace(/htmlTitle/, result.data.items[0].htmlTitle)
         if (toHTTP == true) {
             result.data.items[0].link = result.data.items[0].link.replace("https://", "http://")
