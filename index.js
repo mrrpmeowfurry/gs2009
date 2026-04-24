@@ -215,6 +215,7 @@ let template_gbar_user_logged = path.join(__dirname, "/template/" + serverlangua
 let template_search_normal = path.join(__dirname, "/template/" + serverlanguage + "/search/normal.txt"); // ext_t_s_n
 let template_search_more = path.join(__dirname, "/template/" + serverlanguage + "/search/more.txt"); // ext_t_s_m
 let template_search_EOM = path.join(__dirname, "/template/" + serverlanguage + "/search/more_eom.txt"); // ext_t_s_EOM
+let template_search_notfound = path.join(__dirname, "/template/" + serverlanguage + "/search/not_found.txt"); // ext_t_s_nf
 
 let template_did_you_mean = path.join(__dirname, "/template/" + serverlanguage + "/search/did_you_mean.txt"); // ext_t_dym
 
@@ -1047,6 +1048,7 @@ app.get('/search', async (req, res) => {
             let repl = data.toString();
             repl = repl.replace(/status/, result.data.error.title)
             repl = repl.replace(/message/, result.data.error.desc)
+
             res.send(repl)
         })
         return
@@ -1113,6 +1115,7 @@ app.get('/search', async (req, res) => {
         const ext_t_s_n = fs.readFileSync(template_search_normal, "utf8")
         const ext_t_s_m = fs.readFileSync(template_search_more, "utf8")
         const ext_t_s_eom = fs.readFileSync(template_search_EOM, "utf8")
+        const ext_t_s_nf = fs.readFileSync(template_search_notfound, "utf8")
 
         let repl = "";
         
@@ -1130,7 +1133,28 @@ app.get('/search', async (req, res) => {
             repl = repl.replace("gbar_user_REPLACE_HERE", ext_t_g_u_l)
         }
 
-        
+        if (result.data.items.length < 1) {
+            console.log("[INFO] search: no result found for the query: ", query)
+            repl = repl.replace(/didyoumean/g, "");
+            repl = repl.replace(/item/g, "");
+
+            repl = repl.replace(/topItem/g, ext_t_s_nf);
+
+            repl = repl.replace(/<p>(\s+.+){1,2}\s+<div id="res" class="med">/, '<p><br></p></div><div id="res" class="med">')
+
+            if (only_old == true) {
+                repl = repl.replace(/query/g, actualq)
+            } else {
+                repl = repl.replace(/query/g, query)
+            }
+            if (serverlanguage == "ja"){
+                let encoded = iconv.encode(repl, 'shift_jis')
+                res.set("Content-Type", "text/html;charset=Shift_JIS")
+                res.send(encoded)
+                return
+            }
+            res.send(repl)
+        }
         
         if (only_old == true) {
             repl = repl.replace(/query/g, actualq)
