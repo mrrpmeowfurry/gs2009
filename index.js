@@ -20,6 +20,9 @@ const gs2009_version = pjson.version
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+var publicinstance = false;
+var settingspage = true;
+
 var port = 3000;
 var searchengine = "cse";
 
@@ -78,6 +81,9 @@ function genconfig(){
         gs_engineID = id;
         */
         const JsonTemp = {
+            PUBLIC_INSTANCE: false,
+            ENABLE_SETTINGS_PAGE: true,
+
             PORT: "3000",
 
             LANGUAGE: "en",
@@ -322,8 +328,12 @@ app.get('/setprefs', (req, res) => {
     if (req.query.yt2009addr == "yt2009addr-replace-this") {
         return
     }
-    
-    console.log(req.query)
+
+    if (settingspage == false) {
+        res.send("This feature is disabled due to settings page is disabled.<br>Please contact your administrator to change the settings.")
+        return
+    }
+
     let redir_temp
     let redirhttp_temp
     let onlyold_temp
@@ -817,6 +827,10 @@ app.get('/', (req, res) => {
 
 
 app.get('/gs2009settings', (req, res) => {
+    if (settingspage == false) {
+        res.send("This feature is disabled due to settings page is disabled.<br>Please contact your administrator to change the settings.")
+        return
+    }
     const filePath = path.join(__dirname, "/html/gs2009settings.html");
     fs.readFile(filePath, (err, data) => {
         let repl;
