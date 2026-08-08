@@ -20,6 +20,9 @@ const gs2009_version = pjson.version
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+var publicinstance = false;
+var settingspage = true;
+
 var port = 3000;
 var searchengine = "cse";
 
@@ -78,6 +81,8 @@ function genconfig(){
         gs_engineID = id;
         */
         const JsonTemp = {
+            ENABLE_SERVER_SETTINGS_PAGE: false,
+
             PORT: "3000",
 
             LANGUAGE: "en",
@@ -128,6 +133,8 @@ function reloadconfig(){
     only_old_date = "2010-03-20";
     serverlanguage = "en";
     searchqueryEnabled = true;
+
+    settingspage = true;
     
     try {
         fs.readFileSync('config.json')
@@ -179,6 +186,7 @@ function reloadconfig(){
     console.log("[CONFIG] port <= " + config.PORT)
     searchqueryEnabled = config.SEARCH_QUERY
     console.log("[CONFIG] searchqueryEnabled <= " + config.SEARCH_QUERY)
+    settingspage = config.ENABLE_SERVER_SETTINGS_PAGE
 
     if (searchengine =="cse") {
         if (gs_api == "") {
@@ -322,8 +330,12 @@ app.get('/setprefs', (req, res) => {
     if (req.query.yt2009addr == "yt2009addr-replace-this") {
         return
     }
-    
-    console.log(req.query)
+
+    if (settingspage == false) {
+        res.send("This feature is disabled due to settings page is disabled.<br>Please contact your administrator to change the settings.")
+        return
+    }
+
     let redir_temp
     let redirhttp_temp
     let onlyold_temp
@@ -817,6 +829,10 @@ app.get('/', (req, res) => {
 
 
 app.get('/gs2009settings', (req, res) => {
+    if (settingspage == false) {
+        res.send("This feature is disabled due to settings page is disabled.<br>Please contact your administrator to change the settings.")
+        return
+    }
     const filePath = path.join(__dirname, "/html/gs2009settings.html");
     fs.readFile(filePath, (err, data) => {
         let repl;
