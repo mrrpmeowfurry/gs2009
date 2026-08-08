@@ -81,8 +81,7 @@ function genconfig(){
         gs_engineID = id;
         */
         const JsonTemp = {
-            PUBLIC_INSTANCE: false,
-            ENABLE_SETTINGS_PAGE: true,
+            ENABLE_SERVER_SETTINGS_PAGE: false,
 
             PORT: "3000",
 
@@ -134,6 +133,8 @@ function reloadconfig(){
     only_old_date = "2010-03-20";
     serverlanguage = "en";
     searchqueryEnabled = true;
+
+    settingspage = true;
     
     try {
         fs.readFileSync('config.json')
@@ -185,6 +186,7 @@ function reloadconfig(){
     console.log("[CONFIG] port <= " + config.PORT)
     searchqueryEnabled = config.SEARCH_QUERY
     console.log("[CONFIG] searchqueryEnabled <= " + config.SEARCH_QUERY)
+    settingspage = config.ENABLE_SERVER_SETTINGS_PAGE
 
     if (searchengine =="cse") {
         if (gs_api == "") {
