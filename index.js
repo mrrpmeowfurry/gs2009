@@ -1170,6 +1170,7 @@ app.get('/search', async (req, res) => {
                 return
             }
             res.send(repl)
+            return
         }
         
         if (only_old == true) {
