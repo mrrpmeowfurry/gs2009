@@ -1156,7 +1156,8 @@ app.get('/search', async (req, res) => {
 
             repl = repl.replace(/topItem/g, ext_t_s_nf);
 
-            repl = repl.replace(/<p>(\s+.+){1,2}\s+<div id="res" class="med">/, '<p><br></p></div><div id="res" class="med">')
+            // should be good enough to catch no result
+            repl = repl.replace(/(<br clear="all"\/>\s*)?<table id="nav"[\s\S]*?<\/table>/, "")
 
             if (only_old == true) {
                 repl = repl.replace(/query/g, actualq)
